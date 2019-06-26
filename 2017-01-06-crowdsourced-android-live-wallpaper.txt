@@ -1,0 +1,48 @@
+---
+Title: Crowdsourced Android Live Wallpaper
+Published: 2017-01-06 09:06:29
+Author: Nathanael Maher
+Tag: App,Android,Story
+---
+Around this time last year I got the idea to make a live wallpaper android app that used links from subreddits that people posted related to a certain subject. [--more--] Since then I have made the app and made several changes to the way it works to appeal to more, non-redditor, users as well.
+
+##Some Story
+My original design allowed the user to pick any subreddit to get images from but I later discovered that this already existed so I needed to change my strategy. I changed it so that I had a base app that I could easily change the theme to make several apps but in the end they are the same app, just different themes. So far the only theme I made is "Nature" but I plan to make a gaming and a space theme eventually. The way it's designed it's very easy to make new themes but I am somewhat reluctant to do so due to the extremely low amount of downloads I got on the current nature one xD.
+
+##How it works
+
+###Json
+The design of the app is fairly simple. I didn't even need to use a reddit api! Reddit has a very good built-in way of getting page data for a subreddit. You can see the json data of any subreddit by entering this url `reddit.com/r/subredditname.json`, basically just add `.json` to the end of a subreddit url. It returns all the data you need for this kind of app. It gives you each post including its title, author, url and more. If you put that in Google Chrome's developer extension console, you can see the structure here.
+
+[image reddit-wallpaper-json.png]
+
+**Disclaimer:** The subreddit used in this example is called "EarthPorn". It's not actually porn, it's images of beautiful places on earth of nature. Don't worry :P
+
+On the left you can see the basic structure, and then on the right is what a post looks like, in this case post 25. In the psot data you can see there is a bunch of data such as author, url, upvotes, downvotes, and even the "over_18" value which lets the app know if a post is NSFW so I can not show it if the user doesn't want it (Usually reddit is very good with flagging NSFW content, especially on active subreddits like the ones used in the app).
+
+###Design
+Here is a general flow chart showing how the app works.
+
+[image reddit-wallpaper-design.png]
+
+As you can see, the app loads images asynchronously either from a file or from the web if a file is not available. This prevents there from being a noticeable wait time between images (at least most of the time since some images take a long time to load). 
+
+Also, when an image is no longer in use, it also saves it to a file removes it from memory. This is essential for not having memory leak issues since it's very easy with wallpapers since Android doesn't allow them to use too much, especially not on older devices.
+
+So, overall, the design and app is very simple but there were many challenges along the way.
+
+##Challenges
+The main challenge was the constant crashing due to memory leaks. As mentioned before, only 2 images can be loaded at a time in order to prevent such leaks. At first, I just loaded up all images to memory and got constant crashes so I needed a different approach.
+
+I did have some experience with Android before this project, but not a lot. This project forced me to learn about how to use things such as AsyncTasks, Services, File Saving and a few other things. It's helped me become more comfortable with my Android abilities.
+
+Adding AdMob support for in-app ads in the settings app was also new but the process was very simple so overall wasn't a big challenge but definitely something new and interesting for me.
+
+Another big challenge that I have not found a way to overcome was getting downloads! It's very hard to get downloads on wallpaper apps. The market is saturated with really bad ones and people generally avoid them. As mentioned before, I only got 3 downloads so far :/ I think that giving the app a more clever name and maybe a better thumbnail could help. Also, posting about this app in this blog and talking about it on my YouTube channel will surely help as well ;)
+
+##Conclusion
+Making an Android live wallpaper app for the first time was a good and fun challenge but I'm not sure I would do it again since it's not worth it in the end. It's hard to get people to download these apps even if they are so cool like this one. Personally, I love this app and I have it running on my own Android devices and it's great to see all these cool new pictures every day.
+
+If you are interested in downloading it, click the button below:
+
+<a href='https://play.google.com/store/apps/details?id=naturecrowdsourcedlivewallpaper.hollowbit.net.naturecrowdsourcedwallpaper&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1' target="_blank"><img style="max-width: 250px;" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>

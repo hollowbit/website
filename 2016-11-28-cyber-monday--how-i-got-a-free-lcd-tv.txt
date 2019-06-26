@@ -1,0 +1,25 @@
+---
+Title: Cyber Monday: How I got a FREE Lcd Tv
+Published: 2016-11-28 22:36:02
+Author: Nathanael Maher
+Tag: Story,Tv
+---
+So basically, this cyber Monday I got a free Lcd Tv, not from the stores though. I repaired a broken Tv someone was throwing out with only 2 hours of personal labor almost anyone with a phillips head screw driver can do.[--more--]
+
+##Story
+On my way home from school, I noticed someone had a flat screen Tv beside their garbage can outside. I returned later when they owner was home and asked if it was okay if I took it and he let me. It is an [LG 42" 1080p with model number 42LH30](http://www.lg.com/ca_en/tvs/lg-42LH30-lcd-tv).
+
+##Problem
+The problem with the display was simple, the left side of the screen didn't work. It was clear the back-light was working since I could see black pixels but there was no signal on that side. After a few minutes of research it became evident that it was a simple loose ribbon cable problem. There are tons of videos on YouTube covering this issue and not just on LG TVs, many other ones too. Other common symptoms are half the screen being glitchy or distorted and basically just not being usable.
+
+##Solution
+The solution was as simple as the problem, make sure the ribbon cable stayed in place. A great video discussing this issue that I used was [this one](https://www.youtube.com/watch?v=mpp14G-c9Yo&ab_channel=SimonPitt) (Embedded below as well). Basically above the monitor there are 8 ribbon cables visible once mostly disassembled. Playing around with these cables (usually applying pressure) can help you determine which one is causing the issue since once you play with it a bit, the issue gets resolved! But, this is not permanent since the cable can go out of place once you put it back together. On my Tv the solution was to push down on the ribbon cable to the far left (same side that wasn't working). The way I fixed it permanently was just folding up a piece of paper and tapping it on the back, THAT'S IT! I plugged everything back in and it all worked great.
+
+[youtube mpp14G-c9Yo]
+
+##Conclusion
+Don't throw out your Tv if it is having a minor issue like this. The disassembly was as simple as finding screws and unscrewing them until the top ribbon cables were exposed. And it only required a phillips screw driver. IT could save you lots of money.
+
+Another conclusion: If you get lucky and manage to find someone who threw out their Tv, you are in luck, do not simply dismiss the issue to be too complicated to fix, pick it up and try it out, maybe you will end up with a great Tv for free!
+
+This ends this blog post, I hope you enjoyed it! I will try to post some more soon, 2016 was a big year and I have a lot to post about. Bye!

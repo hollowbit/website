@@ -1,0 +1,47 @@
+---
+Title: Old Electronics Murderer: The bad capacitor
+Published: 2016-11-30 18:18:22
+Author: Nathanael Maher
+Tag: Hardware, Old, Electronics
+---
+From several of my experiences in the past few weeks, I've really come to see how old, broken capacitors have caused the death of some many great electronics.[--more--] In this post I will discuss 2 recent experiences and how I managed to fix 2 perfectly fine electronics just by replacing bad capacitors and then  I will discuss how to identify and replace bad capacitors. If you are not interested in the stories, you can just skip to the important part.
+
+##Exhibit A: My original xbox
+Around spring this year, I was planning on trading my old Xbox with someone on Kijiji for a Steam link and a Steam controller, but it ended up breaking the night before I was supposed to meet him when I was testing out to make sure my games were working. In the end I was fortunate it broke because I can't imagine having actually traded that thing away, I must have been out of my mind, I love my original xbox because I grew up with it.
+
+The problem, as you could have guessed, was a bad capacitor. In fact, it was only one bad capacitor. I watched a YouTube video (wasn't able to find it) showing several problems that could cause xbox's not to boot, and the main one was bad capacitors. I will talk more about identifying and replacing them later.
+
+##Exhibit B: My computer monitor
+The monitor wasn't completely broken, but it would take very long to open, and often took a good 5 tries before it would turn on properly. It's a fairly old industrial monitor. If you are interested, it is a [Samsung SyncMaster 225bw](http://www.newegg.com/Product/Product.aspx?Item=N82E16824001083). So every time I wanted to use a second monitor on my computer, I would have to fiddle with it for about 5 minutes which became really annoying and would often make me not even feel like using the second monitor if I just wanted to quickly get some work done.
+
+The issue was again capacitors, but this time I needed to replace 5 of them before I got it right. Now, it turns on almost instantly every time.
+
+##Identifying bad capacitors
+Identifying them isn't rocket science. If there is some brownish-red crap oozing out the top or the metal is buldging, it's probably broken or at least not working to it's full potential. Capacitors have some kind of substance or chemical (different depending on the capacitor type) inside of them that can dry up and make it not work properly or, after a while, not even work at all. If you want to know about how capacitors work, read the next paragraph, otherwise jsut skip it if you want to get to fixing your problem.
+
+##How capacitors work
+I'm not any electrical engineer or anything but I will try to explain how they work to the best of my abilities. In a sense, I think it's benificial for you, the reader, because I won't end up drowning you with useless knowledge so I will get strait to the point. My dad first explained to me how capacitors work by comparing them to water reservoirs and this is probably the simplest explanation. Just imagine a water reservoir that has some water inside of it. At the top the is a faucet dumping water in it at an inconsistent rate. Sometimes it sends a lot of water at once, sometimes it send only a little bit. At the bottom of the reservoir there is a pipe letting out water at a constant rate, it never changes.
+
+Now this is where the reservoir comes into play. When the faucet dumps a lot of water into the reservoir, it fills up more, leaving more water in reserve for when the faucet doesn't dump enough water in it, and the output is taking more water than is being inputted by the reservoir. This kind of averages out everything so you always have a constant output with inconsistent input. Same goes for an electrical circuit, especially in electronics such as power supply which take inconsistent current from the wall of your home and turns it into something constant and safe your electronics can use. I hope this explanation helped a bit, so here is how you solve the problem.
+
+##Solving the problem
+You will need several things to replace the capacitor:
+- Soldering iron
+- Solder (preferably with flux on it)
+- Solder wick or some other method of solder removal
+
+There are 2 steps to solving the problem, first you must identify which type of capacitor is needed and then you need to replace it.
+
+###Finding a replacement
+Simply look at the broken capacitor and on the side their should be 2 numbers that are important to you. First is the microfarad (μF) value and second is the voltage (V). Take a note of those. If there are multiple broken capacitors, just take not of all of them. For buying a replacement, you have several options. You could go to your local electronics store and they will general ask around 0.50-3$ some more and some less but it's usually something like that. 
+
+As for the microfarad and voltage values, you do not have to get a perfect match. Usually it is okay to get a higher voltage and the microfarad should be similar to the one you have, but don't deviate too much. If you are unsure, you can easily go on Ebay and buy the exact ones you need for very cheap but the shipping could take a good 3-4 weeks. It depends on you.
+
+###Replacing the old capacitor
+I'm not going to go into detail on how to remove it using text since that would be super boring. Here is a good video: 
+[youtube urGB_IUXSIM]
+
+##The Verdict
+Justice is served! All bad capacitors have been replaced with new, functioning members of our circuit society. Capacitor replacement is easy and cheap and could save you a lot of money if you tend to simply throw stuff out when they are broken. Also, if you see perfectly good, but broken electronics, sometimes a capacitor replacement could be the solution and you could get yourself some very good, cheap or sometimes free electronics.
+
+P.S. Sorry for the lack of pictures in this one. I wasn't expecting to make an article about this so I threw out my old capacitors :( Will try to do a software related post soon since I am mostly posting hardware stuff these days

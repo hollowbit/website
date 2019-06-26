@@ -1,0 +1,67 @@
+---
+Title: Homage to Combat (Atari 2600)
+Published: 2016-11-14 11:01:35
+Author: Nathanael Maher
+Tag: Projects,Combat
+---
+In one of my Computer Science classes at my college, we were given a game assignment. It basically just needed to be a basic game made with Javascript with some jQuery and a couple of other minor specifications.
+
+For mine, I decided to make a partial remake of the classic Atari 2600 game Combat.[--more--] I have some fond memories of playing this game on my dad's Atari 2600 and it fit the specifications fairly well. It's also a very fun game to play!
+
+[image combat-original.jpg Picture - 50%]
+
+(Source: http://www.8-bitcentral.com/reviews/2600combat.html )
+
+
+[toc]
+
+##Gameplay
+The basic idea of the game is to destroy your opponent's tanks before they destroy yours'. The game uses tank controls where left and right rotate the tank, up moves them forward and down switches the tank. This gives the game a bit of strategy since players cannot move the tank backwards, they need to rotate 180°.
+
+The game also has multiple maps all loaded from a JSON file. There are plenty of settings for each map. Tiles can also be added in that JSON file if someone wants to add more.
+
+##Challenges
+###Learning to use Javascript professionally
+Before this project I hadn't really made any complex programs using Javascript. Yes, I made some basic projects, mostly using jQuery, but never anything to this scale. As one of my professors says Javascript is one the simplest, most complicated programming languages.
+
+Overall, Javascript isn't very hard, but coming from Java and c#, it can take some time to understand the logic. Javascript wasn't meant to be the language it is today and that's easy to see since they only just added classes recently! My main issues with the language were arrays, objects (basically associative arrays it seems without value type restrictions) and classes. By default, arrays seem to be the Java equivalent of ArrayLists, you can set and get values at specific indexes, but the size is dynamic, so they can also be added and removed. This was a bit weird at first but also  simple and elegant. For classes and objects, it's kind of weird at first to understand that there are so many ways to define objects. Especially using the old, non-class, way, objects don't have types at all. You can add and remove properties anywhere which is weird, like I said, it's basically an associative array with no type restrictions.
+
+Another thing that Javascript does that is very cool but weird at first is adding methods and properties to classes using prototypes. This makes it possible to do things like creating functions for Strings that can be useful that can be used anywhere in your code. I often find myself wanting this feature when programming in Java.
+
+Structuring code in Javascript is also very different from other programming languages. Separate files aren't meant for separate classes, it's more about separate sections of the code, and separating the code into different functions. I didn't really do that with this game but for future projects I will at least know about that.
+
+###Optimizing trigonometric function usages
+Although it didn't noticeably affect the game's performance on the hardware I tested on, trigonometric functions can be fairly taxing on the CPU. So to optimize my game, I changed the code to only use `sin` and `cos` functions when the tank's rotation changed.
+
+My original code (simplified):
+```javascript
+//Tank move function
+function move() {
+  this.x += Math.sin(this.rotation) * TANK_SPEED;
+  this.y += Math.cos(this.rotation) * TANK_SPEED;
+}
+```
+
+Code after optimizations:
+```javascript
+function updateRotation() {//Called whenever rotation changes
+	this.sin = Math.sin(this.rotation);
+	this.cos = Math.cos(this.rotation);
+}
+
+function move() {
+  this.x += this.sin * TANK_SPEED;
+  this.y += this.cos * TANK_SPEED;
+}
+```
+So that worked nicely and optimized the game quite a bit.
+
+##Final Product
+Overall, I'm pretty happy with the result. I'm also glad to learn about [bfxr.net](http://bfxr.net) for sound effects. It's perfect for this kind of game.
+
+Here is what the game ended up looking like:
+
+[image combat-homage-gif.gif Picture - 80%]
+
+Play the game here: [[fa fa-play]](http://hollowbit.net/vedi0boy/play/combat/)
+Check out the code here: [[fa fa-github]](https://github.com/vedi0boy/small-projects/tree/master/combat)

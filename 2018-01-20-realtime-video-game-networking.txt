@@ -1,0 +1,229 @@
+---
+Title: Realtime Video Game Networking
+Published: 2018-01-20 17:16:30
+Author: Nathanael Maher
+Tag: networking, video game, development, programming, realtime
+---
+# So, you want to make a multiplayer game, eh?
+
+This guide will teach you the theory and practical application for setting up a realtime game's netcode. All code snippets will be in pseudo code. I will also use JSON to demonstrate examples of objects and packets. Visual diagrams will also be used to demonstrate high-level logic. Certain terms will have an footnote notation beside them to let you know that it is available for explanation in the dictionary at the end of this guide.
+
+### What types of games is this guide for:
+Realtime 2D, or 3D games. Examples: World of Warcraft, League of Legends, The Legend of Zelda, Team Fortress, Age of Empires, Street Fighter, etc. If you directly control a character with realtime movement, than the game should use this kind of netcode.[--more--]
+
+### What types of games is this guide NOT for:
+Simple turn based games. Examples: Chess, Civilization, Fire Emblem, etc. Although these games can take advantage of this approach to networking, it would be overkill.
+
+### What this guide will NOT discuss:
+- Programming language-specific networking libraries (use whatever you like)
+- Infrastructure setup (server hardware, internet security, etc)
+- Saving player information (in databases, etc)
+- UI menu interaction
+
+## Let's go!
+
+### The Naive Approach
+
+Game networking is easy, unless you don’t want players to cheat. Originally, netcode was very simple, but also naive. The client would calculate all player movement and just send it to the server. The server would then just assumes it’s correct and update it on their end and for all other clients. However, unless you trust all your players, this is a bad idea. Players can just update their speed to whatever they want, walk through walls and many, many other *creative* cheats. This is where the authoritative server model is used.
+
+### The Authoritative Server Model
+The best way to view game networking is to think of the clients as *"windows"* into the server's game world. Through these windows, clients have a limited view, and can only interact with the game world so much. They simply render the game world and send the server their player's input commands. The term "authoritative" is used because, in this model, the server has the final say. If a client tries to do something the server doesn't like, the server just ignores the client's request as if nothing happened. All other clients on the server will not even see that client's actions being reflected on the game world, because they are not even being applied on the server. There are a few main parts to this kind of netcode, but once it is set up, you will be surprised by how simple and elegant it really is, and how well it prevents cheating.
+
+## World Snapshots
+Continuing with the idea that clients are just a window into the server world, they somehow need to be updated on the status of the world. World snapshots are used to let every client know the state of every world object. 
+
+### What do world snapshots contain, exactly?
+You can model it in different ways. Currently, in Archipelo[^3], the world snapshots look something like this:
+```json
+{
+  time: 502352,
+  mapSnapshot: {properties: {pvp: true}}
+  chunks:[
+    {
+      entities: [{name: vedi0boy, x: 423, y: 73, direction: "left", animation: "sword-swing" properties:{sword: diamond}},
+                       {name: slime1, x: 405, y: 75, direciton: "right", animation: "attack"}]
+    },
+    {...},
+    {7 more times...}
+  ]
+}
+```
+The world has a time value for the day/night cycle. There is also a map snapshot that can give map-specific properties. Not all games will be modeled this way, but Archipelo[^3] uses chunks for efficiency and for limiting the player's game world view. Each one has data about the entities contained in it.
+
+### Property types
+Please note that I will use the term "interpolate"[^1] often, I will explain more why this concept is important. A world snapshot should consist of 2 different types of data values:
+
+ * Statuses
+ * Interpolate-ables (as I call them)
+
+**Statuses** are values whose change cannot be predicted or interpolated[^1] between. For example, if you have a door in your game, the status can change between open, and closed. Another example would be a player's username. The player may be able to change their name, but it is not possible for clients to predict or interpolate[^1] the change of those 2 states. Either the door is open, or closed and either the player's username is the previous one, or the new one. There are no *in-betweens*.
+
+**Interpolate-ables** are values with *in-betweens*. The prime example of this would be an entity's[^2] position within the game world. In one update, their position can be x: 214, y: 890, and in the next update their position can be x: 219, y: 1082. Even though these values are different, clients can use a mathematical formula to figure out what position to render the entity[^2] at, based on the time stamp of those 2 snapshots and where the client's current render time is right now. This formula is known as interpolation[^1]. Here is an example algorithm:
+
+```javascript
+function getInterpolatedValue(timeSnapshot1, valueSnapshot1, timeSnapshot2, valueSnapshot2, timeCurrent) {
+   return (timeCurrent - timeSnapshot1) / (timeSnapshot2 - timeSnapshot1) * (valueSnapshot2 - valueSnapshot1) + valueSnapshot1;
+}
+```
+
+> NOTE: When talking about interpolation[^1] algorithms (including the example above), I am talking about *linear* interpolation[^1] algorithms. There are other types of interpolation[^1] algorithms, but they do not suit our needs here.
+
+### How does it all work?
+[image networking-world-snapshots.png]
+Servers update the game world and generate world snapshots at a steady rate. In the diagram, this rate is 20 times per second. For most games, this is more than enough, you can even get by with 10 in some cases. For more competitive games, like Counter Strike, it can and should be more.
+
+At a rate of 20 per second, this means a new world snapshot is sent to the game clients every 50ms (1000ms / 20 = 50ms). This diagram shows a 75ms ping for the client, which is about average. In realtime, the ping can change and this networking model accounts for that. For simplicity's sake, the client and server have the same time of 250ms, but you should use epoch time[^5] since it is guaranteed to be the same for both.
+
+Server:
+
+1. Updates game world
+2. Sends out world snapshots of the updated world
+
+Client:
+
+1. Receives and saves world snapshots in an ordered list (from oldest snapshots, to newest)
+2. Calculates the render time
+```
+RenderTime = CurrentTime - (PacketLossSafety + Ping)
+```
+
+3. Calculates what the position and state, of all visible entities, are at the RenderTime, using the 2 packets that the RenderTime falls in between (50 and 100, in our example)
+4. Renders the game world with those states and positions
+5. Discards old packets that can no longer be used
+
+Here is an example based on the diagram. Let's say there is a slime entity[^2] that needs to be rendered at time 75ms and both packets at 50ms and 100ms are available. Here is how it will calculate the state of the entity[^2]:
+
+```javascript
+//Update should be called once before render each frame. It can be called at any rate, whether the client is at 30fps, 60fps or 120fps.
+function update(entitySnapshot1, entitySnapshot2, renderTime)
+    //Statuses
+    this.animationId = entitySnapshot1.animationId
+
+    //Interpolat-ables
+    this.x = getInterpolatedValue(entitySnapshot1.time,//50ms
+                                                     entitySnapshot1.x,//2
+                                                     entitySnapshot2.time,//100ms
+                                                     entitySnapshot2.x,//10
+                                                     renderTime)//75ms
+    //The value for x is now 6
+    [same for y, animationTime, etc]
+}
+```
+Status variables are updated based on the snapshot before the renderTime (since it has already "occurred", while entitySnapshot2 is in the "future" still) and interpolat-ables are set based on interpolation[^1] between both snapshots.
+
+The **Packet Loss Safety** is a value that adds extra delay to the entire transaction. "Why would you do this?" you may be asking. It is exactly for what it says it is for. If, for some reason, packets are lost, and the client never receives them, the client can still, mostly, render the game world as intended, at least for interpolatable values. With a Packet Loss Safety of 100ms, the client can lose a packet and still have another one available after it to use to get the game world state. That's the nice thing with interpolation[^1]. You can interpolate[^1] between any 2 packets and still get a somewhat accurate idea of where an entity[^2] is located and what they are doing.
+
+> NOTE: If your networking library uses TCP[^4] only, you can safely set the Packet Loss Safety to 50ms (in this example with a server rate of 20 snapshots per second, or every 50ms). You should not be losing packets in TCP[^4], so you can safely increase your player's ping.
+
+You also need to subtract **ping** from the RenderTime. Otherwise, if the player has a Ping of higher than Packet Loss Safety, the client will be trying to render the game world at a time where it has not even yet received the packets for. For example, if the player has a ping of 75ms and the PacketLossSafety is at 50ms, the diagram above shows that it will be trying to render at 200ms, a snapshot time it has simply not yet received.
+
+## Client Commands
+So now we know how to update the game world for the clients, but how do they interact with the game world. This is where the idea of *"commands"* come in. This is, in a sense, the opposite of world snapshots. Here is what the flow looks like:
+[image networking-commands.png]
+Certain terms, such as *client-side prediction*, *client correction* and *lag compensation* are mentioned here. They will be discussed later.
+
+Similar to world snapshots, player commands are captured at a steady rate. This rate needs to be synchronized with the server. In the example, both the server and client have a rate of 30 times per second. This rate does not have to be the same as the snapshot creation rate. Both are independent.
+
+Client:
+
+1. Capture the current state of the player's controllers
+
+```json
+{
+  command_id: 49,
+  attack: true,
+  sprint: false,
+  x-axis: 0.56,
+  y-axis: -0.09,
+  command_results: null
+}
+```
+
+2. Send the commands to the server
+
+Server:
+
+1. Get Command packet from the client
+2. Save it to be processed (in a list)
+3. In a separate thread, process the next command packet at the same rate the client generates them (30 times per second, in our example) and update the game world based on it.
+
+> NOTE: For more competitive games, again, like Counter Strike, you can and should increase the command packet rate. As long as both the client and the server process the commands at the same rate, you are good.
+
+Seems simple enough, but there are 2 big problems if you decide to just leave the game this way.
+
+## Lag Compensation
+The first problem is latency/lag. You need to remember that the client is seeing the game world, in our example, 175ms behind the server's current state. This added to the delay of sending the commands packet to the server, there is a delay of at least 250ms between the time the server has something happen and when the client sends a response.
+
+This was an issue with older games' netcode. It was more common for player to complain saying "On my screen, I saw the bullets hit the other player, but he did not die, even though he should have."
+
+Some games can just say "too bad", but this can cause a lot of player to get frustrated, especially if they live far from the server and have very high pings. *Lag compensation* can be used by the server to get rid of this issue, but it requires some extra work.
+
+The idea is that the server should keep a *log* of all world snapshots that have been generated, for the last few seconds. This way, when the server receives a command packet, it can lookup the positions and statuses of other entities and process the player's command based on it. In the scenario with the player complaining above, this would mean that the server will calculate the other player's position when the player pulled the trigger, rather than when the player's command reached the server. In some games, it is not a big difference, but in competitive online games where things move quickly, it can be the difference between hitting and not hitting a target. The idea is for the server to be fair to all players, no matter their ping.
+
+To recreate this game world state, for when the player triggered the action, interpolation[^1] is again used. In the same sense that interpolation[^1] is used to render the game world at a certain time in the past, it is used here to calculate collisions at some point in the past.
+```javascript
+ClientHitTime = CurrentTime - (2 * ClientPing + PacketLossProtection)
+```
+
+See the code above for calculating the world state at a given time.
+
+## Client-side Prediction
+For basic networking, all you need is world snapshots. But when you play around with it, especially in a high ping environment, you will notice that client movement lags behind by a fair amount. This is because the client only notices their input once the server processes it, updates the game world with it, and sends out a snapshot of it to the same client. This delay can be massive. For example, if the client has a ping of 75ms, which is not uncommon, they would only see their input being reflected on the game world in 250ms (2xPing + PacketLossSafety), in the best case scenario. Some kinds of games, like Age of Empires, would be completely playable with this kind of delay, since the player doesn't need to see their actions reflected the moment they execute them. But for most games, this is not really acceptable.
+
+This is where *client-side prediction* comes in. The idea is to have the clients apply their own inputs right as the commands are packaged and sent to the server. The client *predicts* where it expects to be when the server sends back it's response to tell it where to go.
+
+The idea is to simply run the exact same code on the client as on the server. Anything that affects the player's state, including movement, animations or any actions, should be predicted.
+
+### What should NOT be predicted:
+- Death and damage: Predicting if another entity[^2] is going to damage the player, or whether the player is going to damage another entity[^2].
+- The actions of other entities, including other players
+These kinds of things should all be handled by the server. Otherwise, it would result in many false predictions and will over-complicate things.
+
+### Client correction
+There are some cases where client-side predictions will be wrong, and need to be corrected. For example, if the server teleports a player, the player needs to be updated on where their new position is. Maybe the server wants to prevent the player from moving, the server would have to let the client know to negate these actions.
+
+*Client correction* is used for this, and there is more involved than just sending a response to the client to fix their position. The client needs to keep a *log* of all commands that it sent out. Commands also need to have unique, incrementing IDs that can be used to identify which command the server wants to correct. Here is some pseudo code to demonstrate how it is handled:
+```javascript
+function receivePositionCorrectionPacket(packet) {
+    commandLog.removeCommandsOlderThan(packet.command_id)//Remove older commands
+    savedPacket = commandLog.getPacketWithId(packet.command_id)//Get the command to compare to the server
+
+    //Check if the player's state matches the server's
+    if (savedPacket.command_result != packet.command_result) {
+        //Update position
+        player.setCommandResults(packet.command_result)
+        for (nextPacket in commandLog.getAllPacketsAfter(packet.command_id)) {
+            player.applyCommandPacket(nextPacket)
+        }
+    }
+}
+```
+The client gets the position correction packet, looks up the player's state at that point and compares it with the state the server generated. Normally, the server and client should have the same result. Both processed the commands at the same rate so the math should be exactly the same. But, in the cases mentioned above, it is not always. If it is not the same, the player sets their state to be the same as the server's state, and then goes through all the new commands that were generated after this one, and applies them. The reason for this is because we do not want to discard a bunch of player commands because one before them was invalid. This fast-forwards the client back to current time. If there are further errors in those commands, they will each get their own turn to be compared to the server and be corrected then. If you do not fast forward, ALL the next commands will be different from the server because the server IS processing those next commands.
+
+## Flaws
+Cheats aren't impossible with this model.
+
+With this model, clients know where every entity[^2] is on the level they are on. Some games, like Archipelo, use "chunks" as a more efficient way of letting clients know about entities around them without seeing too much of the game world. Still, it is possible for them to see other players through walls and other game world objects. There is no efficient way of fixing this and this problem plagues many online games today. You can just send updates to players for the entities in their field of view, but the reality is that this field of view can change quickly (especially in shooters) and is completely unpredictable, making the game's experience ruined for everyone, not just the cheaters.
+
+There is also a trade-off with client-side prediction. As discussed, the client will predict things incorrectly at times, requiring it to correct its differences with the server. This can be frustrating for players with a high ping. This is usually the cause of the common complaint "I clearly shot the guy first, but I died anyway and he got away." This is because the client's actions were predicted incorrectly, and in reality, at least according to the authoritative server, the other player shot first. There isn't a solution to this problem aside from getting a lower ping. However, this trade-off is well worth it as leaving a game without implementing client-side prediction will make it *always* feel laggy, as opposed to just on certain occasions.
+
+Thanks for reading! If you found this guide useful, please share. Feel free to comment below with any ideas, suggestions or questions you may have.
+
+P.S. I am going to continue updating and refining this guide. Thanks for you patience.
+
+## Sources and More Information
+* [Source Engine Multiplayer Networking](https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking)
+* [TCP vs UDP by Gaffer On Games](https://gafferongames.com/post/udp_vs_tcp/)
+* [What Every Programmer Needs to Know About Game Networking by Gaffer on Games](https://gafferongames.com/post/what_every_programmer_needs_to_know_about_game_networking/)
+* [Realtime HTML5 Multiplayer Games with NodeJS by Mario Gonzalez](https://www.youtube.com/watch?v=z1_QpUkX2Gg&index=16&list=FLgQ43IG7lhaxd3aT5ptix6A&t=586s)
+* [Why client-side prediction and entity interpolation are important](https://www.youtube.com/watch?v=A4RfSNtUu6c)
+
+## Dictionary
+[^1]: Interpolation, the insertion of an intermediate value or term into a series by estimating or calculating it from surrounding known values (Google Definition). This is used in game networking to figure out the positions and states of entities[^2] at a given timestamp, based on positions and state values that we know are accurate, close to this timestamp.
+[^2]: Entity, any game world object that can change state. This includes position, status, etc. If an object "moves", it is an entity.
+[^3]: Archipelo, An MMO game I am currently working on. More info here: https://hollowbit.net/games/archipelo/
+[^4]: TCP, is a networking protocol that ensures that all packet (unless there is a catastrophic failure) reach their destination, at the expense of speed. Some networking libraries can take advantage of UDP as well. This protocol delivers packets to their destination at a greater speed, but is much more unreliable in comparison.
+[^5]: Epoch time, is the number of milliseconds since January 1st, 00:00 1970. This timestamp is standard to be the same among all computers.
+
+
+

@@ -1,0 +1,79 @@
+---
+Title: Kotlin in a nutshell
+Published: 2018-09-23 12:26:16
+Author: Nathanael Maher
+Tag: Kotlin, Java, Android
+---
+This is just a simple guide for Java developers to get the gist of the differences between Kotlin and Java. Hopefully, you will find Kotlin is really nice to use and consider it for your next project. [--more--]
+
+## Null safety
+Kotlin makes it almost impossible to get NPEs. Variables that are not null safe, have a `?` suffix on the type. Example:
+
+``` kotlin
+var myFoo : Foo? = null
+```
+
+This means that variables without the `?`, must be initialized and cannot be set to null. Kotlin also prevents you from calling methods in objects that could be null. It will not compile your program if you do not check if an object is null. This will compile:
+
+``` kotlin
+if (myFoo != null) {
+	myFoo.bar()
+}
+```
+
+This won't:
+
+``` kotlin
+myFoo.bar()
+```
+
+It is also possible to use the shorthand version for less typing:
+``` kotlin
+myFoo?.bar()
+```
+
+This will check if `myFoo` is not null before calling `bar()`
+
+## Functions as a variable type
+Similar to Javascript, it is possible to save functions as variables. This is useful for callbacks since it does not require anonymous classes. Android uses this for button click events.
+
+``` kotlin
+var onClickEventHandler : (View) -> Unit = {view ->
+ // this is where code is executed
+	view.enabled = false
+}
+
+onClickEventHandler.invoke(view)
+```
+
+## C# style getters and setters
+``` kotlin
+var property : String
+	get()
+	set(value) {
+		field = "Prefix: " + value
+	}
+```
+Object member access and setting is different from java.
+``` kotlin
+// old java way
+myFoo.getProperty();
+myFoo.setProperty("This is my prop");
+
+// new kotlin (c# style) way
+myFoo.property
+myFoo.property = "This is my prop"
+```
+
+In both cases, the value of property is set to "Prefix: This is my prop."
+
+## Extras:
+1. default scope for methods and variables is `public`. Package level scope is called `internal` (I used it for unit testing)
+2. static values and methods are in the `companion` object of a class (almost like a singleton pattern)
+3. constants are called 'val' and are used often in Kotlin for thread safety
+4. Kotlin detects code that could be broken if another thread edits the class members.
+5. `Unit` is the same as `void`
+
+Kotlin is big on using warnings for code that is Java-like, to force new developers to use the Kotlin conventions instead.
+
+Overall, I found that my time with Kotlin was a joy! It integrates nicely with Java libraries and provides a lot of nice features for more bug-free code and a bit of syntactic sugar on top. I highly recommend you try it out if you enjoy Java, Javascript and C#, especially if you are starting a new Android project.

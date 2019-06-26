@@ -1,0 +1,50 @@
+---
+Title: My MMORPG's Post-Mortem
+Published: 2018-06-07 13:43:52
+Author: Nathanael Maher
+Tag: Archipelo, canceled, post-mortem, analysis, retrospective
+---
+I wanted to make a post-mortem for a project that has taken a lot of my time over the past 4 years, and why I don't regret it.[--more--]
+
+## How It Started
+I first got the idea to try to make my own MMORPG back in early 2014. I called it "Archipelo", named after my failed Zelda-inspired Minecraft server. My goal was to make a simple online multiplayer RPG for beginners but with enough content and depth for more advanced MMO players. I also wanted it to be a platform for other people to build their own creations on-top of. I was a huge fan of [Bukkit](https://minecraft.gamepedia.com/g00/Custom_servers/Bukkit?i10c.encReferrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNhLw%3D%3D&i10c.ua=1&i10c.dv=14) and I wanted to create a similar platform for players to be able to make their own "islands" in the game, that would essentially be servers hosted by players who wanted to. They would be able to make plugins to modify the base game's behavior while being restricted by several base rules that would be enforced to make all islands fair.
+
+In the end, we drifted away from this idea as Archipelo's development went on, but I often left hints about the potential for this system in my devlogs. A good example can be found [here](https://www.youtube.com/watch?v=FE5cXCgpZVs&feature=youtu.be&t=3m) (timestamped YouTube video link).
+
+The start of the game's development was rough, but fun. I was just learning about polymorphism and the power of modern OOP (using Java). I settled on using the LibGDX game engine and got very used to it (to a fault). The first 6 months were very slow. I spent a lot of time writing my own code for a textbox ui element, and making the server console pretty, with color markups and more. Looking back, it is obvious I was just trying to program something fun, trying to make my game like Bukkit. The problem was that I didn't have the skills to do this successfully and I took the project too seriously. All I wanted to do was have fun and learn, but I had big plans for this project that prevented that.
+
+## Taking Archipelo Too Seriously?
+Archipelo was a learning experience and could not have been anything more with the skills I had when I started. I didn't have enough experience to see the potential traps of making an MMORPG, but now I do and it scares me. Online games are insanely complex pieces of software.
+
+### Complexity
+First off, you are not just making a game client, you also have to program a game server. If you follow game networking standards, you are essentially writing 2x the amount of code as a single player game. The design overhead of a project like this is huge, unless you decide to skip design and start programming right away (bad idea, pointing my index finger at myself right now). Designing successful, efficient and secure client-server communications is complicated. It took me 2 years to finally completely grasp how realtime game networking works.
+
+### Security
+Security is also a big concern. Since you are handing user logins, you need to learn how to securely store client information, including passwords, e-mail addresses, etc. Learning how to use and configure a secure protocol for exchanging information between clients as well (using wss or the like). Writing a robust network manager that can prevent attacks from hackers or even DDOS attacks. Configuring game servers and user login servers to be safe from hackers trying to break into your system using external methods. Although we didn't get to it yet, handling user payment methods, credit/debit card information. Processing payments, successfully giving users what they paid for and handling refunds.
+
+### Customer Service
+What if users need help, how would we provide customer service? If we introduce purchased goods in the game, we need to back this up somehow.
+
+### Legal and Business Management
+How to manage a legitimate business? Having lawyers to protect us in the case of potential lawsuits from unhappy users.
+
+The point is, I was looking at Archipelo to be a business I could work in one day. With my skills, that was a mistake. There are some serious risks involved in running an online game like Archipelo. People CAN get hurt. This is too much to think about for someone's first major game project. If you want to make an MMO, do it for fun and learning, not for profit. As soon as you introduce a goal of making profit, you open 20 cans of worms that become hard to close back. Nobody truly has the skills to do something like this all on their own, at least not with a big scope.
+
+## Scope
+Our scope was too big. When I was starting the project alone, and later as a team, we took many great ideas from other games that we wanted in Archipelo and added it to our To Do list as we developed. This was not a good idea. When building a large piece of software such as this, first plan out everything in your scope before you start. Try to imagine everything involved, and cut, cut, cut. Turn some must-haves into nice-to-haves and some into will-add-in-an-update. Design the software system to be able to handle new additions to the game in the future, but also plan out how you will implement all your must-haves for your release.
+
+Archipelo's game engine, in retrospect, is not that complex. The reason it took so long to develop was that I didn't plan it out first. I had a To Do list, I implemented the first thing on the list and then went to the next. There was no plan on how these systems would interact, how they could be improved or modified in the future and so on. The chunk system is a great example of this. Since everything was slapped on to the engine, much of it was tightly coupled. The game's engine was therefore very coupled to how the world renderer worked. When we decided to switch to a chunk system, it took 6 months (!) to refactor everything to work with it and there are still bugs related to it to this day that I refuse to fix.
+
+## What I Learned
+**Plan, plan, plan.** I am reading Code Complete right now and as I am reading it, I am seeing how important planning is for successfully creating a piece of software. I look at Archipelo and I can see how many issues would have been fixed if I just planned. Planning the game's design is also essential in making sure everyone is on the same page on what the end product will look like. Decide these things before starting. Planing will also help you decide which tools to use. As mentioned, I decided to use LibGDX at first. I wanted an engine that supported PC and mobile phones, but as the project went on, I started regretting using this engine as I could not deploy it to any modern game consoles, which became especially devastating when the Nintendo Switch came out.
+
+**Good object-oriented skills.** I learned a lot about the power of object-oriented programming throughout this project. This has been helpful for me in many other projects and I feel that it is teaching me how to think.
+
+**Game networking.** Although it took me a while, I learnt how to properly implement a realtime video game's networking system. You can read my blog post on this [here](https://hollowbit.net/nmaher/realtime-video-game-networking).
+
+**Only work with people you know in person.** Although the Archipelo team was good, there were many challenges with working with people (essentially strangers) online. Communication is slow, timezone differences make it difficult to talk in real time, some people go on long hiatuses where they cannot be reached and, often, they don't care about the project as much as you do.
+
+## Conclusion
+It might have seemed like I was being very harsh and negative in this post-mortem, but I think it reflects how much I learned from this experience. Unless you are doing it to learn and you are keeping your scope narrow, I'd recommend against making an online game, unless you are a skilled professional with lots of help. Despite this, I DO NOT regret working on Archipelo. I learnt a lot during this project and it has made me into the programmer and even the person I am today. I was able to build a modest community that I am proud of. I also made connections through this project that have significantly advanced my professional software development career.
+
+Thank you for reading! If you have a similar experience, please share it in the comments below, I'd love to read them.

@@ -1,0 +1,68 @@
+---
+Title: Hexstrat.io is done!
+Published: 2017-07-09 11:28:28
+Author: Nathanael Maher
+Tag: hexagon, hexstrat.io, strategy, game, videogame, hex
+---
+I originally wanted to post this on the HollowBit website, but it's been a while since I posted on this blog so I figured I'd post it here since it's a more appropriate place anyway. I started working on this game last summer (2016) with the hopes of keeping it simple and just making a basic strategy game I can play with friends on road trips or just to test who is a better strategist. I've been working on it here-and-there ever since, but the past couple of weeks I dedicated myself to finally finishing it.[--more--]
+
+[image hexstrat-screenshot.png]
+
+## Inspirations
+This game is mainly inspired by the combat in Civilization V with some elements of Age of Empires and a few of my own tweaks. But, overall, it's basically Civilization V's combat with less units but just as much strategy.
+
+## Goal
+My goal was to keep it simple. I made the least amount of units as possible, and unlike Civ V, there is no tech tree or upgrade path for any units. Each one has their own strategic advantages and uses to win the game.
+
+## Problems encountered
+There was only one main problem, and that was achieving pixel perfect click detection on hexagons. But, the solution was simple in the end. I made a texture (that never gets drawn) that’s used only to detect hexagon clicks. So, with some simple math, all I had to do was determine where, within that texture, the player clicked, by converting game world click coordinates to the texture coordinates. Then, with an x and y coordinate, I could simply get the color of the pixel at that position and determine which hexagon was clicked. Here is the texture:
+
+[image hexstrat-hexmap.png]
+
+There were a few issues with map design and also map rendering with using hexagons. Basically, every odd number column renders HEX_SIZE / 2 below the other ones. I also had to take that into account for the click detection. As mentioned, the map design was harder because of that as well. I did not make a visual map editor for this game, all I did was modified json files, which stored 2D arrays for maps. Editing the 2D arrays gave fairly weird results when actually rendered in game, so I had to do a lot of trial and error to finally get the maps to look the way I wanted.
+
+Of course, another usual challenge I have with making games on my own is art. I really don't like making art, but eventually I got used to it and developed a procedure and it made it a bit less painful.
+
+## Features:
+- 5 maps
+- Ability to choose your faction color and name
+- Great tracks to listen to while playing (mutable)
+- 10 unique units, all with a strategic purpose
+
+## Rules:
+
+### How to win:
+Destroy the other faction's castle.
+
+### Movement:
+Every movable unit has at least 1 move points per turn. Certain tiles (such as forests, hills, cemeteries, ruins, etc) cause the unit to use 2 move points and therefore make units move slower.
+
+Finishing a turn by moving onto a poison or lava tile cause your unit to lose health. Finishing on an oasis or hell grass tile makes your unit gain health.
+
+### Food:
+Food is used in unit production. Castles provide a base 1 food per turn. Building farms (using a worker) increases food output depending on what tile they are built on. Building on wheat or hell grass tiles are the most profitable.
+
+### Units:
+- Horseman: Can move up to 3 hexes per turn. Effective against swordsman.
+- Worker: Unit that can build towers and farms. Any attack kills it instantly.
+- Archer: Weaker unit that can attack at a range of 2 hexes, dealing 2 damage.
+- Swordsman: Unit that has a special "shield" mode that protects it from attacks. Effective against phalanx.
+- Phalanx: Unit that has a "berzerker" mode that instantly kills units. Effective against horseman.
+- Catapult: Low health unit that deals 4 damage to farms, villages and towers.
+- Priest: Support unit that can heal other units. Can also convert enemy units to your faction.
+- Beast: Unit with lots of health and deals 4 damage to everything. Can also blitz every 3 turns. Expensive though and is slow.
+- Tower: Built by workers. Have lots of health and can shoot back at enemies at range.
+
+Villages also have an attack at range.
+
+## Conclusion
+Overall, it wasn't too challenging to make and allowed me to focus on something different than Archipelo for a couple of weeks and saved me from "programmer's block" a few times. It has also boosted my confidence in being able to start and finish (at least what I personally wanted to accomplish) a game project since I haven't done that in a while.
+
+Here are some download links. You can play it on Windows, Mac and Linux as long as your GPU supports OpenGL 2.0+ and you have Java installed or you can download it from the Google Play store on your Android device:
+
+Download (Windows, Mac, Linux): <a href="http://hollowbit.net/vedi0boy/play/hexstrat/hexstrat.jar" title="JAR version download">JAR version download</a>
+
+<a href='https://play.google.com/store/apps/details?id=net.hollowbit.strategygame' target="_blank"><img style="max-width: 250px;" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+
+The game is also entirely open-source if you wish to make personal modifications such as adding new maps, new units and more!
+GitHub: [[fa fa-github]](https://github.com/vedi0boy/hexstrat.io)

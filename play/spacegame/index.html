@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+       <head>
+              <title>TutorialLand</title>
+              <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+              <link href="styles.css" rel="stylesheet" type="text/css">
+              <script src="soundmanager2-setup.js"></script>
+  			  <script src="soundmanager2-jsmin.js"></script>
+			  <style>
+				html, body {
+					width: 100%;
+					height: 100%;
+				}
+			  
+				h4, h1 {
+					color: #eee;
+				}
+				
+				#container a {
+					color: #ccc;
+				}
+				
+				#container {
+					margin: 0 auto;
+					width: 800px;
+				}
+				
+				iframe {
+					margin: 0 auto;
+					width: 100%;
+					height: 450px;
+				}
+			  </style>
+       </head>
+
+       <body>
+              <a class="superdev" href="javascript:%7B%20window.__gwt_bookmarklet_params%20%3D%20%7B'server_url'%3A'http%3A%2F%2Flocalhost%3A9876%2F'%7D%3B%20var%20s%20%3D%20document.createElement('script')%3B%20s.src%20%3D%20'http%3A%2F%2Flocalhost%3A9876%2Fdev_mode_on.js'%3B%20void(document.getElementsByTagName('head')%5B0%5D.appendChild(s))%3B%7D">&#8635;</a>
+			  <div align="center" id="embed-html"></div>
+              <script type="text/javascript" src="html/html.nocache.js"></script>
+			  <br>
+			  <br>
+			  <div id="container">
+				  <h4>Download the game here: <a href="spacegame.jar" title="Download spacegame.jar">spacegame.jar</a></h4>
+				  <br>
+				  <a href="https://github.com/vedi0boy/libgdx-2d-tutorial" title="Go to GitHub Repo" target="_blank">GitHub Respository for this game</a>
+				  <br>
+				  <h4>This game was made during this YouTube tutorial series: </h4>
+				  <iframe width="560" height="315" src="https://www.youtube.com/embed/YCGmXVCvogY?list=PLrnO5Pu2zAHKAIjRtTLAXtZKMSA6JWnmf" frameborder="0" allowfullscreen></iframe>
+			  </div>
+       </body>
+
+       <script>
+              function handleMouseDown(evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                evt.target.style.cursor = 'default';
+              }
+
+              function handleMouseUp(evt) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                evt.target.style.cursor = '';
+              }
+              document.getElementById('embed-html').addEventListener('mousedown', handleMouseDown, false);
+              document.getElementById('embed-html').addEventListener('mouseup', handleMouseUp, false);
+       </script>
+</html>

@@ -1,0 +1,13 @@
+---
+Title: My New Blog
+Published: 2016-11-13 21:08:26
+Author: Nathanael Maher
+Tag: Blog
+---
+Welcome to my new blog!
+
+I've been wanting to make a blog for a while now.[--more--] I've always wanted something I could use to post all my personal projects, express ideas and more. This website is meant to show off what I do as a young, aspiring computer scientist.
+
+I'm not really expecting anybody to read it unless I make an interesting post or something, it's really more for me. I would like to keep track of my progress throughout the years and also have a nice place to be able to show and prove to future employers that I have the skills to do the job.
+
+If anyone is curious, this blog is made with [Yellow CMS](https://developers.datenstrom.se/)

@@ -1,0 +1,35 @@
+---
+Title: Testing Stuff
+Published: 2016-11-13 20:22:45
+Author: Nathanael Maher
+Tag: Example
+Status: draft
+---
+##TOC
+[toc]
+
+##Highlight
+[--more--]
+``` java
+languageSpecificMessageManager = new LanguageSpecificMessageManager();
+languageSpecificMessageManager.reloadWithNewLanguage();
+hollowBitServerConnectivity = new HollowBitServerConnectivity();
+
+if (hollowBitServerConnectivity.connect())
+	screenManager.setScreen(new MainMenuScreen());
+else
+	screenManager.setScreen(new ErrorScreen(languageSpecificMessageManager.getMessage(Cat.UI, "couldNotConnectToHB")));
+
+//For testing purposes
+IS_MOBILE = true;
+```
+
+##YouTube
+
+[youtube LSs64hC58-Q] This si a youtube video
+
+##Contact
+[contact]
+
+##Breadcrumbs
+[breadcrumbs]
